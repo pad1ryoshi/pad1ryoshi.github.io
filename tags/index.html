@@ -5,11 +5,36 @@ permalink: /tags/
 ---
 
 <div class="tags-page">
-    <div class="tag-cloud">
-        {% for tag in site.tags %}
-            <a href="/tags/{{ tag[0] | slugify }}" class="tag-pill">
+    <h1>Todas as Tags</h1>
+
+    <!-- Nuvem de Tags -->
+    <div class="tag-anchors">
+        {% assign sorted_tags = site.tags | sort %}
+        {% for tag in sorted_tags %}
+            <a href="#{{ tag[0] | slugify }}" class="tag-pill">
                 #{{ tag[0] }} ({{ tag[1].size }})
             </a>
         {% endfor %}
     </div>
+
+    <!-- Lista de Posts -->
+    {% for tag in sorted_tags %}
+        <section id="{{ tag[0] | slugify }}" class="tag-section">
+            <h2 class="tag-header">#{{ tag[0] }}</h2>
+            
+            <div class="post-grid">
+                {% for post in tag[1] %}
+                    <article class="post-card">
+                        <h3><a href="{{ post.url | absolute_url }}">{{ post.title }}</a></h3>
+                        <div class="post-meta">
+                            {{ post.date | date: "%d/%m/%Y" }}
+                        </div>
+                        <div class="post-excerpt">
+                            {{ post.excerpt }}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endfor %}
 </div>

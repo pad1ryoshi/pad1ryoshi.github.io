@@ -1,10 +1,8 @@
-{% if page.tags %}
 <div class="post-tags">
     <strong>Tags:</strong>
     {% for tag in page.tags %}
-        <a href="/tags/{{ tag | slugify }}" class="tag">
+        <a href="{{ '/tags/' | absolute_url }}#{{ tag | slugify }}" class="tag-link">
             #{{ tag }}
         </a>
     {% endfor %}
 </div>
-{% endif %}

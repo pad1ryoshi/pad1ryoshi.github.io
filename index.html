@@ -1,56 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+---
+layout: default
+title: Home
+---
+<div class="hero">
+    <p>This blog is dedicated to sharing stories about appsec in general.</p>
+</div>
 
-    <title>pad1ryoshi - Web Security Student and AppSec Student</title>
-
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="icon" href="favicon/favicon.ico">
-
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <h1 class="header-nickname">pad1ryoshi</h1>
-            <nav>
-                
-                <a href="https://open.spotify.com/playlist/5efFzCqzLWvfJbu9vOfUlG?si=fd2a881c17ff4aa9" target="_blank">Do you want to listen to good Brazilian music?</a>
-    
-            </nav>
-            <div class="social-icons">
-                <a href="https://x.com/pad1ryoshi" target="_blank"><img src="images/social/x.jpg" alt="twitter" width="24" height="24" fill="currentColor" viewbox="0 0 24 24"></a>
-                <a href="https://github.com/pad1ryoshi" target="_blank"><img src="images/social/github.jpg" alt="github" width="24" height="24" fill="currentColor" viewbox="0 0 24 24"></a>
-                <a href="https://www.linkedin.com/in/rodrigo-padi/" target="_blank"><img src="images/social/linkedin.jpg" alt="linkedin" width="24" height="24" fill="currentColor" viewbox="0 0 24 24"></a>
-                <a href="https://hackerone.com/pad1ryoshi?type=user" target="_blank"><img src="images/social/hackerone.jpg" alt="hackerone" width="24" height="24" fill="currentColor" viewbox="0 0 24 24"></a>
-                <a href="https://pad1ryoshi.medium.com/" target="_blank"><img src="images/social/medium.jpg" alt="medium" width="24" height="24" fill="currentColor" viewbox="0 0 24 24"></a>
-            </div>
+<div class="terminal-container">
+    <div class="terminal-bar">
+        <div class="terminal-controls">
+            <span class="red"></span>
+            <span class="yellow"></span>
+            <span class="green"></span>
         </div>
-    </header>
+        root@pad1ryoshi ~ $ █
+    </div>
+    <div class="terminal-content">
+        > whoami<br>
+        appsec student<br><br>
+        > ls /skills<br>
+        web_hacking 
+    </div>
+</div>
 
-    <main>
-        <section class="about">
-            <img src="images/social/profile.jpg" alt="profile picture" class="profile-picture">
-            <div class="bio">
-                <p>I'm currently focusing on becoming a Web Security Researcher and understanding more and more about cyber security.</p>
-            </div>
-        </section>
 
-        <br>
-
-        <section class="posts">
-            <article>
-                <h2>Future posts will appear here.</h2>
-                <p class="date">10/11/2024</p>
-                <p class="tags">#web developer #security #bug bounty</p>
-            </article>
-            
-        </section>
-    </main>
-
-    <footer>
-
-    </footer>
-</body>
-</html>
+<section class="recent-posts">
+    {% for post in site.posts limit:2 %}
+        <div class="post-card">
+            <h3><a href="{{ post.url }}" class="post-title">{{ post.title }}</a></h3>
+            <div class="post-date">{{ post.date | date: "%d/%m/%Y" }}</div>
+            {{ post.excerpt }}
+        </div>
+    {% endfor %}
+</section>

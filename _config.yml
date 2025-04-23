@@ -1,0 +1,15 @@
+title: padi1ryoshi
+description: AppSec & Security Research
+baseurl: ""
+url: "https://pad1ryoshi.github.io"
+theme: null
+plugins_dir: _plugins
+plugins:
+  - jekyll-feed
+
+collections:
+  posts:
+    output: true
+  tag_pages: 
+    output: true
+    permalink: /tags/:name/

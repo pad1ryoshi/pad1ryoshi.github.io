@@ -6,6 +6,7 @@ categories: blog
 author: pad1ryoshi
 tags: [architecture]
 ---
+## 🐈‍⬛
 
 John von Neumann was one of the greatest geniuses to have ever lived on earth and, together with Alan Turing, is considered the father of computing.
 

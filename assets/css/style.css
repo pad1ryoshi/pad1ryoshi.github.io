@@ -313,3 +313,24 @@ pre a, code a {
     color: #bb86fc;
     border-bottom: 2px solid #3700b3;
 }
+
+/* Estiliza blocos de código */
+pre code {
+  background-color: #1e1e1e; /* fundo escuro */
+  color: #c792ea;            /* roxo elegante */
+  border-radius: 8px;
+  padding: 12px;
+  display: block;
+  overflow-x: auto;
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+}
+
+/* Estiliza inline code (`assim`) */
+code {
+  background-color: #2b2b2b;
+  color: #c792ea;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+}

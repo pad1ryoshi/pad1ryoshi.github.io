@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>notas</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ascii-header {
+            width: 100%;
+            text-align: center;
+            padding: 2em 1em 1em 1em;
+            color: #ffffff;
+        }
+
+        .ascii-header pre {
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 2.5em 4em;
+            margin: 1em;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        a {
+            color: #0000ff;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: #0000cc;
+        }
+
+        /* Syntax highlighting classes */
+        .url { 
+            color: #d14; 
+            font-weight: normal;
+        }
+
+        .cmd { 
+            color: #008000; 
+            font-weight: bold;
+        }
+
+        .string { 
+            color: #d73a49;
+        }
+
+        .keyword { 
+            color: #0086b3;
+            font-weight: bold;
+        }
+
+        .comment { 
+            color: #6a737d;
+            font-style: italic;
+        }
+
+        .header { 
+            color: #005cc5;
+            font-weight: bold;
+        }
+
+        .value { 
+            color: #032f62;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+        }
+
+        .code-block {
+            background-color: #f6f8fa;
+            border-left: 3px solid #d1d5da;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+
+        b {
+            font-weight: bold;
+        }
+
+        i {
+            font-style: italic;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .ascii-header {
+                padding: 1em 0.5em 0.5em 0.5em;
+            }
+            .ascii-header pre {
+                font-size: 8px;
+            }
+            .container {
+                padding: 1.5em;
+                margin: 0.5em;
+            }
+            pre {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="ascii-header">
+<pre>
+ █     █░▓█████  ▄▄▄▄        ██████ ▓█████  ▄████▄   █    ██  ██▀███   ██▓▄▄▄█████▓▓██   ██▓
+▓█░ █ ░█░▓█   ▀ ▓█████▄    ▒██    ▒ ▓█   ▀ ▒██▀ ▀█   ██  ▓██▒▓██ ▒ ██▒▓██▒▓  ██▒ ▓▒ ▒██  ██▒
+▒█░ █ ░█ ▒███   ▒██▒ ▄██   ░ ▓██▄   ▒███   ▒▓█    ▄ ▓██  ▒██░▓██ ░▄█ ▒▒██▒▒ ▓██░ ▒░  ▒██ ██░
+░█░ █ ░█ ▒▓█  ▄ ▒██░█▀       ▒   ██▒▒▓█  ▄ ▒▓▓▄ ▄██▒▓▓█  ░██░▒██▀▀█▄  ░██░░ ▓██▓ ░   ░ ▐██▓░
+░░██▒██▓ ░▒████▒░▓█  ▀█▓   ▒██████▒▒░▒████▒▒ ▓███▀ ░▒▒█████▓ ░██▓ ▒██▒░██░  ▒██▒ ░   ░ ██▒▓░
+░ ▓░▒ ▒  ░░ ▒░ ░░▒▓███▀▒   ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ░▒ ▒  ░░▒▓▒ ▒ ▒ ░ ▒▓ ░▒▓░░▓    ▒ ░░      ██▒▒▒ 
+  ▒ ░ ░   ░ ░  ░▒░▒   ░    ░ ░▒  ░ ░ ░ ░  ░  ░  ▒   ░░▒░ ░ ░   ░▒ ░ ▒░ ▒ ░    ░     ▓██ ░▒░ 
+  ░   ░     ░    ░    ░    ░  ░  ░     ░   ░         ░░░ ░ ░   ░░   ░  ▒ ░  ░       ▒ ▒ ░░  
+    ░       ░  ░ ░               ░     ░  ░░ ░         ░        ░      ░            ░ ░     
+                      ░                    ░                                        ░ ░     
+</pre>
+</div>
+<div class="container">
+<pre>
+=----------------------------------------------------------------------=
+=--[ Blind SSRF - Testando testando testando ]-----------------------=
+=----------------------------------------------------------------------=
+=--[ by pad1ryoshi ]---------------------------------------------------=
+=----------------------------------------------------------------------=
+
+<b>--[0 Índice</b>
+
+    1 - TL;DR
+    2 - Reconhecimento
+    3 - Brincando com o parâmetro "?url="
+    4 - Triage
+    5 - Links
+
+======================================================================
+
+<b>--[1 TL;DR</b>
+
+Recentemente reportei um Blind SSRF no parâmetro <span class="highlight">"?url="</span> usado pelo 
+<i>image optimizer</i> do Next.js em um programa público de Bug Bounty. 
+Exploração simples: a aplicação fez requisições para um domínio que 
+eu controlei, mas o impacto direto foi limitado a enumeração de portas/hosts internos(as).
+
+<b>--[2 Reconhecimento</b>
+
+Para ser sincero, eu estava apenas buscando subdomínios que me 
+chamassem atenção e descobri esse daqui <i>intexpfront[.]redacted[.]co</i>, 
+uma coisa que eu curto fazer é utilizar o devtools e ficar brincando/analisando 
+o máximo de informação possível. Na aba "Network" percebi algumas requisições 
+interessantes acontecendo quando eu recarregava a página =>
+
+<span class="url">https://intexpfront[.]redacted[.co]/_next/image?url=http://intexpfront[.]redacted[.co]/image.jpg&w=384&q=8</span>
+
+Não sei vocês mas toda vez que eu vejo um parâmetro <span class="highlight">"?url="</span> 
+automaticamente da vontade de testar SSRF, aproveitei o path "/_next/image" 
+para procurar artigos sobre possíveis vulnerabilidades de SSRF 
+relacionadas com o framework Next e encontrei dois artigos super 
+valiosos (links ao final). Deixando claro, testei basicamente todo o 
+conteúdo dos dois artigos contra o alvo mas não vou mostrar aqui pois 
+seria muita coisa para escrever e fugiria de uma "simples anotação".
+
+<b>--[3 Brincando com o parâmetro "?url="</b>
+
+Para testar SSRF sempre começo tentando entender o que posso 
+controlar ou não na requisição, existem casos que é possível 
+controlar apenas o path da requisição ou o arquivo, existem casos 
+que é possível controlar apenas o subdomínio... deu para entender, 
+eu acho? Então, nesse caso foi bem rápido e prático mas eu tentei 
+coisas do tipo =>
+
+<span class="url">https://intexpfront[.]redacted[.co]/_next/image?url=http://intexpfront[.]redacted[.co]/naoexisto.jpg&w=384&q=8</span>
+
+ou
+
+<span class="url">https://intexpfront[.]redacted[.co]/_next/image?url=http://intexpfront[.]redacted[.co]:8080/&w=384&q=8</span>
+
+ou
+
+<span class="url">https://intexpfront[.]redacted[.co]/_next/image?url=http://blog[.]meusite[.co]/arquivomalicioso.jpg&w=384&q=8</span>
+
+
+Uma forma de comprovar o SSRF é enviando uma requisição para um 
+domínio que controlamos e observando se recebemos algo. Criei uma instância aqui 
+https://ssrf.cvssadvisor.com/ e controlei o parâmetro alvo da 
+seguinte forma =>
+
+<span class="url">https://intexpfront[.]redacted[.co]/_next/image?url=https://meu[.]collaborator[.]rs/&w=384&q=8</span>
+
+O website alvo me devolveu uma resposta padrão <span class="string">"The requested 
+resource isn't a valid image."</span> mas eu recebi a requisição no 
+domínio em que eu controlo, foi algo parecido com isso =>
+
+<div class="code-block">----[ HTTP Request Recebido ]----
+<span class="keyword">HTTP/1.1</span> <span class="value">200 OK</span>
+<span class="header">User-Agent:</span> node
+<span class="header">Host:</span> meu[.]collaborator[.]rs
+<span class="header">Accept:</span> */*
+<span class="header">Accept-Language:</span> *
+<span class="header">Sec-Fetch-Mode:</span> cors
+<span class="header">Accept-Encoding:</span> br, gzip, deflate
+<span class="header">Connection:</span> close
+---------------------------------</div>
+
+Para deixar claro, eu tentei de várias formas aumentar o impacto 
+desse Blind SSRF mas não consegui e não acho que foi skill issue... 
+Bom, quando a gente tem um Blind SSRF meio meme o que a gente pode 
+fazer? Tentar listar portas de serviços internos e hosts da rede 
+interna - o mínimo. É super tranquilo fazer essa listagem, foi 
+literalmente isso daqui =>
+
+<span class="url">https://intexpfront[.]redacted[.co]/_next/image?url=http://localhost:PORT&w=384&q=8</span>
+
+Usei o intruder  do Burp para enviar várias requisições para portas arbitrárias. A aplicação devolvia duas respostas diferentes.
+Quando a porta está ativa eu recebia um status "400" e quando a porta não estava ativa eu recebia um status "500"
+
+<b>--[4 Triage</b>
+
+Eu reportei para a plataforma de Bug Bounty e a criticidade foi 
+média. Sendo mais exato <span class="string">"Medium (5.8)"</span>. Para ser sincero? Achei 
+totalmente justo dado o caráter blind e a ausência de um vetor fácil 
+de exfiltração de dados sensíveis sem combinação com outras falhas.
+
+<b>--[5 Links</b>
+
+[1] <a href="https://www.intigriti.com/researchers/blog/hacking-tools/ssrf-vulnerabilities-in-nextjs-targets" target="_blank">https://www.intigriti.com/researchers/blog/hacking-tools/ssrf-vulnerabilities-in-nextjs-targets</a>
+[2] <a href="https://www.assetnote.io/resources/research/digging-for-ssrf-in-nextjs-apps" target="_blank">https://www.assetnote.io/resources/research/digging-for-ssrf-in-nextjs-apps</a>
+[3] <a href="https://x.com/hacker_/status/1694554700555981176" target="_blank">https://x.com/hacker_/status/1694554700555981176</a>
+</pre>
+</div>
+</body>
+</html>

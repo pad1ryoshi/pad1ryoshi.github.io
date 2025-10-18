@@ -1,1 +1,1 @@
-# pad1ryoshi.github.io
+# blog

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>// Bug Bounty Hunters BR</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;500;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0e;
+    --bg2: #080f15;
+    --panel: #0a141c;
+    --border: #0e2a3a;
+    --accent: #00ffe0;
+    --accent2: #ff4e6a;
+    --accent3: #ffe600;
+    --text: #c8e8f0;
+    --muted: #3a6070;
+    --glow: 0 0 20px rgba(0,255,224,0.25);
+    --glow2: 0 0 20px rgba(255,78,106,0.25);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* SCANLINES */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(0,0,0,0.12) 2px,
+      rgba(0,0,0,0.12) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    animation: scan 8s linear infinite;
+  }
+
+  @keyframes scan {
+    0%   { background-position: 0 0; }
+    100% { background-position: 0 200px; }
+  }
+
+  /* NOISE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* CANVAS MATRIX BG */
+  #matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 72px 24px 40px;
+  }
+
+  .header-tag {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--accent);
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 16px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .header-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #fff;
+    animation: fadeUp 0.7s ease both 0.1s;
+  }
+
+  .header-title span {
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(0,255,224,0.5);
+  }
+
+  .header-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 20px;
+    animation: fadeUp 0.7s ease both 0.2s;
+  }
+
+  .header-sub em {
+    color: var(--accent2);
+    font-style: normal;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 8px 0 64px;
+    opacity: 0.3;
+    animation: fadeIn 1s ease both 0.4s;
+  }
+
+  /* GRID */
+  .grid {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    position: relative;
+    padding: 32px 28px 28px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    animation: fadeUp 0.7s ease both;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+
+  .card:nth-child(1) { animation-delay: 0.3s; }
+  .card:nth-child(2) { animation-delay: 0.4s; }
+  .card:nth-child(3) { animation-delay: 0.5s; }
+  .card:nth-child(4) { animation-delay: 0.6s; }
+  .card:nth-child(5) { animation-delay: 0.7s; }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,255,224,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-color, var(--accent)), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card:hover {
+    border-color: var(--accent-color, var(--accent));
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5), var(--glow);
+  }
+
+  .card:hover::after { opacity: 1; }
+
+  /* Corner decoration */
+  .card .corner-tl, .card .corner-br {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-color: var(--accent-color, var(--accent));
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+  .card .corner-tl {
+    top: 8px; left: 8px;
+    border-top: 1px solid; border-left: 1px solid;
+  }
+  .card .corner-br {
+    bottom: 8px; right: 8px;
+    border-bottom: 1px solid; border-right: 1px solid;
+  }
+  .card:hover .corner-tl, .card:hover .corner-br { opacity: 1; }
+
+  /* CARD INDEX */
+  .card-index {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+
+  /* AVATAR placeholder with glitch */
+  .avatar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+
+  .avatar {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--accent-color, var(--accent));
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(0,255,224,0.04);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    overflow: hidden;
+  }
+
+  .avatar-initials {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent-color, var(--accent));
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 12px currentColor;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(20%) contrast(1.1);
+    transition: filter 0.3s;
+  }
+
+  .card:hover .avatar img {
+    filter: grayscale(0%) contrast(1.15) drop-shadow(0 0 6px var(--accent-color, var(--accent)));
+  }
+
+  .avatar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,255,224,0.06) 50%);
+    animation: avatarScan 3s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes avatarScan {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  .handle-wrap {}
+
+  .card-handle {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fff;
+    letter-spacing: 0.06em;
+    position: relative;
+    display: inline-block;
+  }
+
+  .card-handle .prefix {
+    color: var(--accent-color, var(--accent));
+    font-size: 0.9em;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-left: 8px;
+    animation: pulse 2s ease infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* STATS BAR */
+  .stat-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .stat-line .val { color: var(--accent-color, var(--accent)); }
+
+  /* LINKS */
+  .links {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.25s;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-color, var(--accent));
+    transform: translateX(-110%);
+    transition: transform 0.25s ease;
+    opacity: 0.08;
+  }
+
+  .link-btn:hover {
+    border-color: var(--accent-color, var(--accent));
+    color: var(--accent-color, var(--accent));
+    box-shadow: 0 0 10px rgba(0,255,224,0.1);
+  }
+
+  .link-btn:hover::before { transform: translateX(0); }
+
+  .link-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  /* GLITCH anim on hover */
+  .card:hover .card-handle {
+    animation: glitch 0.6s ease;
+  }
+
+  @keyframes glitch {
+    0%   { text-shadow: none; transform: none; }
+    20%  { text-shadow: -2px 0 var(--accent2), 2px 0 var(--accent); transform: translateX(1px); }
+    40%  { text-shadow: 2px 0 var(--accent2), -2px 0 var(--accent); transform: translateX(-1px); }
+    60%  { text-shadow: -1px 0 var(--accent2); transform: translateX(1px); }
+    80%  { text-shadow: 1px 0 var(--accent); }
+    100% { text-shadow: none; transform: none; }
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+  }
+
+  footer span { color: var(--accent); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 0.3; }
+  }
+
+  /* TERMINAL BLINK CURSOR */
+  .blink {
+    animation: blink 1s step-end infinite;
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* FLOATING PARTICLES */
+  .particle {
+    position: fixed;
+    width: 2px; height: 2px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    animation: float linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes float {
+    0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.3; }
+    100% { transform: translateY(-10vh) translateX(var(--drift)); opacity: 0; }
+  }
+
+  /* PING BADGE */
+  .badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border: 1px solid var(--accent-color, var(--accent));
+    color: var(--accent-color, var(--accent));
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    opacity: 0.7;
+  }
+
+  /* HEX DECORATION */
+  .hex-bg {
+    position: absolute;
+    right: -20px; bottom: -20px;
+    width: 120px; height: 120px;
+    opacity: 0.03;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<header>
+  <p class="header-tag">// DUPE</p>
+  <h1 class="header-title">Bug Bounty <span>BR</span></h1>
+  <p class="header-sub">status: <em>CRITICAL</em> <span class="blink">_</span></p>
+</header>
+
+<div class="divider"></div>
+
+<main class="grid" id="grid"></main>
+
+<footer>
+  <span>[ DUPE ]</span> — bug bounty hunters br — dupe &amp; skill <span>//</span> stay sharp
+</footer>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const hunters = [
+  {
+    handle: "corrupted_bytes",
+    icon: "icons/corrupted_bytes.png",
+    initials: "CB",
+    badge: "Web & IA",
+    accentColor: "#00ffe0",
+    h1Link: "https://hackerone.com/corrupted_bytes?type=user",
+    xLink:  "https://x.com/rafabyte_",
+    xHandle: "@rafabyte_",
+  },
+  {
+    handle: "busf4ctor",
+    icon: "icons/busf4ctor.png",
+    initials: "BF",
+    badge: "Web & IA",
+    accentColor: "#ff4e6a",
+    h1Link: "https://hackerone.com/busf4ctor?type=user",
+    xLink:  "https://x.com/busf4ctor",
+    xHandle: "@busf4ctor",
+  },
+  {
+    handle: "dk4trin",
+    icon: "icons/dk4trin.png",
+    initials: "DK",
+    badge: "Web",
+    accentColor: "#ffe600",
+    h1Link: "https://hackerone.com/dk4trin?type=user",
+    xLink:  "https://x.com/dk4trin",
+    xHandle: "@dk4trin",
+  },
+  {
+    handle: "g3tr0",
+    icon: "icons/g3tr0.png",
+    initials: "G3",
+    badge: "Web",
+    accentColor: "#7b61ff",
+    h1Link: "https://hackerone.com/g3tr0",
+    xLink:  "https://x.com/uhGusta",
+    xHandle: "@uhGusta",
+  },
+  {
+    handle: "yuji",
+    icon: "icons/yuji.png",
+    initials: "YJ",
+    badge: "Web",
+    accentColor: "#ff8c42",
+    h1Link: "https://hackerone.com/yujilik?type=user",
+    xLink:  "https://x.com/Yujilik",
+    xHandle: "@Yujilik",
+  },
+];
+
+// ─── RENDER CARDS ────────────────────────────────────────────────────────────
+const grid = document.getElementById('grid');
+
+hunters.forEach((h, i) => {
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.style.setProperty('--accent-color', h.accentColor);
+
+  card.innerHTML = `
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <p class="card-index">// OPERATOR_X</p>
+
+    <div class="avatar-wrap">
+      <div class="avatar">
+        <img src="${h.icon}" alt="${h.handle}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span class="avatar-initials" style="display:none">${h.initials}</span>
+      </div>
+      <div class="handle-wrap">
+        <div class="card-handle">
+          <span class="prefix">~$</span> ${h.handle}
+          <span class="status-dot"></span>
+        </div>
+        <div class="stat-line">
+          <span>Nationality:</span>
+          <span class="val">Brazilian</span>
+        </div>
+        <span class="badge">${h.badge}</span>
+      </div>
+    </div>
+
+    <div class="links">
+      <a href="${h.h1Link}" target="_blank" rel="noopener" class="link-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+        </svg>
+        HackerOne
+      </a>
+      <a href="${h.xLink}" target="_blank" rel="noopener" class="link-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.733-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        ${h.xHandle}
+      </a>
+    </div>
+
+    <svg class="hex-bg" viewBox="0 0 100 100" fill="none">
+      <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"
+        stroke="white" stroke-width="1"/>
+      <polygon points="50,18 82,34 82,66 50,82 18,66 18,34"
+        stroke="white" stroke-width="0.5"/>
+    </svg>
+  `;
+
+  grid.appendChild(card);
+});
+
+// ─── MATRIX RAIN ─────────────────────────────────────────────────────────────
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, cols, drops;
+
+function initMatrix() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  const fontSize = 13;
+  cols = Math.floor(W / fontSize);
+  drops = Array(cols).fill(1);
+}
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(5,10,14,0.05)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#00ffe0';
+  ctx.font = '13px Share Tech Mono';
+  const chars = '01アイウエオカキクケコ<>{}[]$#@!%^&*ABCDEFabcdef';
+  drops.forEach((y, i) => {
+    const ch = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(ch, i * 13, y * 13);
+    if (y * 13 > H && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+
+initMatrix();
+window.addEventListener('resize', initMatrix);
+setInterval(drawMatrix, 45);
+
+// ─── FLOATING PARTICLES ───────────────────────────────────────────────────────
+function spawnParticle() {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const x = Math.random() * 100;
+  const dur = 6 + Math.random() * 10;
+  const drift = (Math.random() - 0.5) * 60;
+  p.style.cssText = `
+    left:${x}vw;
+    animation-duration:${dur}s;
+    animation-delay:${Math.random()*5}s;
+    --drift:${drift}px;
+    ${Math.random() > 0.5 ? 'background:#ff4e6a' : ''}
+  `;
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), (dur + 5) * 1000);
+}
+
+for (let i = 0; i < 30; i++) spawnParticle();
+setInterval(spawnParticle, 1200);
+
+// ─── GLITCH RANDOM ───────────────────────────────────────────────────────────
+setInterval(() => {
+  const cards = document.querySelectorAll('.card-handle');
+  const card = cards[Math.floor(Math.random() * cards.length)];
+  card.style.animation = 'none';
+  requestAnimationFrame(() => {
+    card.style.animation = '';
+    card.style.animation = 'glitch 0.5s ease';
+  });
+}, 3000);
+</script>
+</body>
+</html>
